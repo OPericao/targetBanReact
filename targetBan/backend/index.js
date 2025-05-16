@@ -117,7 +117,6 @@ io.on('connection', (socket) => {
     room[team].player.push(socket.id);
 
     const draftStarted = room.blue.ready && room.red.ready;
-    console.log(room.pickOrder[room.pickIndex]);
     socket.emit('renewInfo', { draftStarted, side: room.pickOrder[room.pickIndex]});
   });
 

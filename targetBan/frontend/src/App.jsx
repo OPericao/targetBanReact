@@ -103,11 +103,16 @@ function App() {
   useEffect(() => {
     socket.emit('joinRoom', { roomId, team });
 
-    socket.on('renewInfo', ({ draftStarted, side }) => {
-      console.log(side);
-      setDraftStarted[draftStarted];
-      setSide[side];
-    });
+    const handleRenewInfo = ({ draftStarted, side }) => {
+      setDraftStarted(draftStarted);
+      setSide(side);
+    };
+
+    socket.on('renewInfo', handleRenewInfo);
+
+    return () => {
+      socket.off('renewInfo', handleRenewInfo);
+    };
   }, []);
 
   useEffect(() => {
