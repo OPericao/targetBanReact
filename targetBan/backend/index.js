@@ -153,7 +153,7 @@ app.get('/', (req, res) => {
   res.send('Servidor Socket.IO funcionando.');
 });
 
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 8080;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor escoitando en http://localhost:${PORT}`);
 });
