@@ -167,7 +167,7 @@ function App() {
 
   useEffect(() => {
     if (side !== '') {
-      setTiempoRestante(10);
+      setTiempoRestante(45);
     }
   }, [side]);
 
