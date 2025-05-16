@@ -19,7 +19,7 @@ function App() {
 
   const [selectedChampion, setSelectedChampion] = useState('');
 
-  const [side, setSide] = useState('blueban');
+  const [side, setSide] = useState('');
   const [blueChamps, setBlueChamps] = useState([]);
   const [redChamps, setRedChamps] = useState([]);
   const [blueBans, setBlueBans] = useState([]);
