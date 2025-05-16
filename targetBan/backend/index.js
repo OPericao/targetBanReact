@@ -14,7 +14,7 @@ const io = new Server(server, {
 let rooms = {};
 let timers = {};
 
-const TURN_DURATION = 10000;
+const TURN_DURATION = 45000;
 
 const pickOrder = ['blueban', 'redban', 'blueban', 'redban', 'blueban', 'redban', 'blue', 'red',
                     'red', 'blue', 'blue', 'red', 'redban', 'blueban', 'redban', 'blueban', 'red', 'blue', 'blue', 'red'];
