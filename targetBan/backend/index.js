@@ -115,6 +115,7 @@ io.on('connection', (socket) => {
 
     socket.join(roomId);
     room[team].player.push(socket.id);
+    socket.emit('renewInfo', { draftStarted: room.draftStarted, side: room.pickOrder[room.pickIndex]});
   });
 
   socket.on('playerReady', ({ roomId, team }) => {
