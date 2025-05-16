@@ -45,13 +45,13 @@ export default function JoinRoom() {
           <button className='btn btn-primary rounded-0'
             onClick={() => joinRoomAs('blue')} 
             disabled={teamStatus.blue}
-            >
+          >
             Unirse como Azul
           </button>
           <button className='btn btn-danger rounded-0'
             onClick={() => joinRoomAs('red')} 
             disabled={teamStatus.red}
-            >
+          >
             Unirse como Rojo
           </button>
         </div>
