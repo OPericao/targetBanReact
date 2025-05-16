@@ -104,6 +104,7 @@ function App() {
     socket.emit('joinRoom', { roomId, team });
 
     socket.on('renewInfo', ({ draftStarted, side }) => {
+      console.log(side);
       setDraftStarted[draftStarted];
       setSide[side];
     });
