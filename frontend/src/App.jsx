@@ -45,7 +45,8 @@ function App() {
 
       const { data: jugadoresData, error: err2 } = await supabase
         .from('jugadores')
-        .select('*');
+        .select('*')
+        .order('nombre', { ascending: true });
 
       const { data: campeonRolData, error: err3 } = await supabase
         .from('campeonRol')
