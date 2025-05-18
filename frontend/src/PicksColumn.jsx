@@ -21,7 +21,7 @@ export default function SideColumn({ champs, side }) {
         <div className={`column${side} d-grid align-items-center align-content-start gap-2 py-2`}>
             {bannersToShow.map((champ, index) => (
                 <div key={index} className="d-flex justify-content-center">
-                    <img src={`/assets/banners/${champ}Banner.png`} className="img-fluid" />
+                    <img src={`/assets/banners/${champ}Banner.png`} className="img-fluid" draggable="false"/>
                 </div>
             ))}
         </div>
