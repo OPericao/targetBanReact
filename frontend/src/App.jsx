@@ -25,6 +25,8 @@ function App() {
   const [blueBans, setBlueBans] = useState([]);
   const [redBans, setRedBans] = useState([]);
 
+  const [hoverChamp, setHoverChamp] = useState('unknown');
+
   const [rol, setRol] = useState(0);
   const [jugador, setJugador] = useState(0);
   const [campeon, setCampeon] = useState('');
@@ -151,6 +153,9 @@ function App() {
 
   const handleHoverChange = (e) => {
     const campeonSeleccionado = e.target.id;
+    if(side == 'blue' || side == 'red'){
+      setHoverChamp(campeonSeleccionado);
+    }
     setSelectedChampion(campeonSeleccionado);
   }
 
@@ -213,28 +218,26 @@ function App() {
 
   useEffect(() => {
     const handleChampionPicked = async ({ user, champion }) => {
-      if (champion != '') {
-        if (user == 'blue') {
-          await supabase
-            .from('historialPartidas')
-            .update({
-              bluePicks: [...blueChamps, champion]
-            })
-            .eq('id', roomId);
-        } else {
-          await supabase
-            .from('historialPartidas')
-            .update({
-              redPicks: [...redChamps, champion]
-            })
-            .eq('id', roomId);
-        }
-
-        setCampeones(prev => prev.filter(c => c.nombre.trim().toLowerCase() != champion.trim().toLowerCase()));
-        setCampeonesFiltrados(campeones);
-
-        setSelectedChampion('');
+      if (user == 'blue') {
+        await supabase
+          .from('historialPartidas')
+          .update({
+            bluePicks: [...blueChamps, champion]
+          })
+          .eq('id', roomId);
+      } else {
+        await supabase
+          .from('historialPartidas')
+          .update({
+            redPicks: [...redChamps, champion]
+          })
+          .eq('id', roomId);
       }
+
+      setCampeones(prev => prev.filter(c => c.nombre.trim().toLowerCase() != champion.trim().toLowerCase()));
+      setCampeonesFiltrados(campeones);
+
+      setSelectedChampion('');
     };
 
     socket.on('championPicked', handleChampionPicked);
@@ -242,7 +245,7 @@ function App() {
     return () => {
       socket.off('championPicked', handleChampionPicked);
     };
-  }, [blueChamps, redChamps, campeones]);
+  }, [blueChamps, redChamps]);
 
   useEffect(() => {
     const handleChampionBanned = async ({ user, champion }) => {
@@ -365,7 +368,12 @@ return (
     </div>
     <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1.5fr 3fr 1.5fr' }}>
       <PicksColumn
-        champs={blueChamps}
+        champs={
+          blueChamps.includes(hoverChamp) || team != side || team != 'blue'
+            ? blueChamps
+            : [...blueChamps, hoverChamp]
+
+        }
         side={"blue"}
       />
 
@@ -382,7 +390,11 @@ return (
       />
 
       <PicksColumn
-        champs={redChamps}
+        champs={
+          redChamps.includes(hoverChamp) || team != side || team != 'red'
+            ? redChamps
+            : [...redChamps, hoverChamp]
+        }
         side={"red"}
       />
     </div>
