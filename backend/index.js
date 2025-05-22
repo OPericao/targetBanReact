@@ -54,7 +54,7 @@ function startTurnTimer(roomId) {
   const interval = setInterval(() => {
     const remaining = Math.max(0, endTime - Date.now());
     io.to(roomId).emit('remainingTime', Math.floor(remaining / 1000));
-  }, 1000);
+  }, 2000);
 
   timers[roomId] = { timeout, interval };
 }
