@@ -1,7 +1,7 @@
 import ChampionsGrid from './ChampionsGrid';
 import BarraFiltros from './BarraFiltros';
 
-export default function ColumnaCentral({ rol, handleRolChange, campeon, handleCampeonChange, jugadores, handleJugadorChange, campeonesFiltrados, selectedChampion, handleHoverChange}){
+export default function ColumnaCentral({ rol, handleRolChange, campeon, handleCampeonChange, jugadores, handleJugadorChange, campeonesFiltrados, selectedChampion, handleHoverChange }){
     return (
         <div className="columnCenter d-flex flex-wrap flex-column justify-content-start mx-auto">
             <BarraFiltros

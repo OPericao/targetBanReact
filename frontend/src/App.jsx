@@ -25,8 +25,6 @@ function App() {
   const [blueBans, setBlueBans] = useState([]);
   const [redBans, setRedBans] = useState([]);
 
-  const [hoverChamp, setHoverChamp] = useState('unknown');
-
   const [rol, setRol] = useState(0);
   const [jugador, setJugador] = useState(0);
   const [campeon, setCampeon] = useState('');
@@ -152,12 +150,21 @@ function App() {
   };
 
   const handleHoverChange = (e) => {
-    const campeonSeleccionado = e.target.id;
-    if(side == 'blue' || side == 'red'){
-      setHoverChamp(campeonSeleccionado);
+    if(!side.includes('ban') && side != team){
+      return
     }
-    setSelectedChampion(campeonSeleccionado);
+    socket.emit('hoverChampion', ({ champion: e.target.id, roomId }))
+    setSelectedChampion(e.target.id);
   }
+
+  useEffect(() => {
+    socket.on('championHovered', ( champion ) => {
+      setSelectedChampion(champion);
+      console.log(champion);
+    });
+
+    return () => socket.off('championHovered');
+  }, []);
 
   useEffect(() => {
     const handleRemainingTime = (time) => {
@@ -369,9 +376,9 @@ return (
     <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1.5fr 3fr 1.5fr' }}>
       <PicksColumn
         champs={
-          blueChamps.includes(hoverChamp) || team != side || team != 'blue'
+          blueChamps.includes(selectedChampion) || side != 'blue'
             ? blueChamps
-            : [...blueChamps, hoverChamp]
+            : [...blueChamps, selectedChampion]
 
         }
         side={"blue"}
@@ -391,9 +398,9 @@ return (
 
       <PicksColumn
         champs={
-          redChamps.includes(hoverChamp) || team != side || team != 'red'
+          redChamps.includes(selectedChampion) || side != 'red'
             ? redChamps
-            : [...redChamps, hoverChamp]
+            : [...redChamps, selectedChampion]
         }
         side={"red"}
       />

@@ -95,6 +95,10 @@ io.on('connection', (socket) => {
     }
   });
 
+  socket.on('hoverChampion', async ({ champion, roomId }) => {
+    io.to(roomId).emit('championHovered', champion );
+  });
+
   socket.on('joinRoom', ({ roomId, team }) => {
     let room = rooms[roomId];
 
