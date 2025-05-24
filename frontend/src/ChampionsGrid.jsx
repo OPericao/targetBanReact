@@ -1,4 +1,4 @@
-export default function ChampionsGrid({ campeonesFiltrados, selectedChampion, handleHoverChange }) {
+export default function ChampionsGrid({ campeonesFiltrados, selectedChampion, handleHoverChange, canPick }) {
     return (        
         <div
             className="d-flex flex-wrap justify-content-center align-content-start flex-grow-1 mt-3 pt-2"
@@ -10,6 +10,7 @@ export default function ChampionsGrid({ campeonesFiltrados, selectedChampion, ha
                     <button
                         className={`btn ${campeon.nombre === selectedChampion ? 'boton-picked' : ''} btn-champ mx-0 p-0`}
                         onClick={handleHoverChange}
+                        disabled={canPick}
                     >
                         <img
                             src={`/assets/campeones/${campeon.nombre}.png`}
