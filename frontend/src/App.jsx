@@ -394,7 +394,7 @@ return (
         campeonesFiltrados={campeonesFiltrados}
         selectedChampion={selectedChampion}
         handleHoverChange={handleHoverChange}
-        canPick={draftStarted && side.replace('ban', '') == team}
+        canPick={draftStarted && side.replace('ban', '') != team}
       />
 
       <PicksColumn
