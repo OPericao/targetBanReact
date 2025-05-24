@@ -370,7 +370,7 @@ function filtrarCampeones() {
 
 return (
   <div id="appContainer" className="d-flex flex-column min-vh-100">
-    <div className="alert alert-danger text-center fw-bold" role="alert">
+    <div className={`alert ${ side.replace('ban', '') == "blue" ? 'alert-primary' : 'alert-danger'} text-center fw-bold`} role="alert">
       Turno del equipo {side.replace('ban', '')} - Tiempo restante: {tiempoRestante}s
     </div>
     <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1.5fr 3fr 1.5fr' }}>
