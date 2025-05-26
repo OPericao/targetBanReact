@@ -16,8 +16,10 @@ let timers = {};
 
 const TURN_DURATION = 45000;
 
-const pickOrder = ['blueban', 'redban', 'blueban', 'redban', 'blueban', 'redban', 'blue', 'red',
+const turnOrder = ['blueban', 'redban', 'blueban', 'redban', 'blueban', 'redban', 'blue', 'red',
                     'red', 'blue', 'blue', 'red', 'redban', 'blueban', 'redban', 'blueban', 'red', 'blue', 'blue', 'red'];
+
+const pickOrder = ['red0', 'red1', 'blue1', 'blue2', 'red2', 'red3', 'blue3', 'blue4', 'red4', 'control'];
 
 function startTurnTimer(roomId) {
   if (timers[roomId]) {
@@ -32,7 +34,7 @@ function startTurnTimer(roomId) {
     const room = rooms[roomId];
     if (!room) return;
 
-    const currentTurn = room.pickOrder[room.pickIndex];
+    const currentTurn = room.turnOrder[room.pickIndex];
     let user;
     if(currentTurn.includes('blue')){
       user = 'blue';
@@ -43,7 +45,7 @@ function startTurnTimer(roomId) {
     
     io.to(room[user].player[0]).emit('turnTimeout', { turn: currentTurn, user });
 
-    if (room.pickIndex >= room.pickOrder.length) {
+    if (room.pickIndex >= room.turnOrder.length) {
       io.to(roomId).emit('draftFinished');
       delete rooms[roomId];
       clearInterval(timers[roomId].interval);
@@ -67,10 +69,12 @@ io.on('connection', (socket) => {
 
     room.pickIndex++;
 
-    io.to(roomId).emit('championPicked', { user, champion });
+    io.to(roomId).emit('championPicked', { user, champion, pickingIndex: pickOrder[room.pickOrderIndex] });
 
-    if (room.pickIndex < room.pickOrder.length) {
-        io.to(roomId).emit('turnChanged', room.pickOrder[room.pickIndex]);
+    room.pickOrderIndex++;
+
+    if (room.pickIndex < room.turnOrder.length) {
+        io.to(roomId).emit('turnChanged', room.turnOrder[room.pickIndex]);
         startTurnTimer(roomId);
     } else {
         io.to(roomId).emit('draftFinished');
@@ -87,8 +91,8 @@ io.on('connection', (socket) => {
 
     io.to(roomId).emit('championBanned', { user, champion });
 
-    if (room.pickIndex < room.pickOrder.length) {
-      io.to(roomId).emit('turnChanged', room.pickOrder[room.pickIndex]);
+    if (room.pickIndex < room.turnOrder.length) {
+      io.to(roomId).emit('turnChanged', room.turnOrder[room.pickIndex]);
       startTurnTimer(roomId);
     } else {
       io.to(roomId).emit('draftFinished');
@@ -107,7 +111,8 @@ io.on('connection', (socket) => {
         blue: { player: [], ready: false }, 
         red: { player: [], ready: false }, 
         pickIndex: 0,
-        pickOrder
+        pickOrderIndex: 0,
+        turnOrder
       };
     }
 
@@ -121,7 +126,7 @@ io.on('connection', (socket) => {
     room[team].player.push(socket.id);
 
     const draftStarted = room.blue.ready && room.red.ready;
-    socket.emit('renewInfo', { draftStarted, side: room.pickOrder[room.pickIndex]});
+    socket.emit('renewInfo', { draftStarted, side: room.turnOrder[room.pickIndex]});
   });
 
   socket.on('playerReady', ({ roomId, team }) => {

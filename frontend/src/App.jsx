@@ -25,6 +25,8 @@ function App() {
   const [blueBans, setBlueBans] = useState([]);
   const [redBans, setRedBans] = useState([]);
 
+  const [pickingIndex, setPickingIndex] = useState('blue0');
+
   const [rol, setRol] = useState(0);
   const [jugador, setJugador] = useState(0);
   const [campeon, setCampeon] = useState('');
@@ -189,6 +191,7 @@ function App() {
       setRol(0);
       setJugador(0);
       setCampeon('');
+      setSelectedChampion('');
 
       const randomIndex = Math.floor(Math.random() * campeonesFiltrados.length);
       const randomChampion = campeonesFiltrados[randomIndex].nombre;
@@ -224,19 +227,25 @@ function App() {
   }, [rol, campeon, jugador, campeones]);
 
   useEffect(() => {
-    const handleChampionPicked = async ({ user, champion }) => {
+    const handleChampionPicked = async ({ user, champion, pickingIndex }) => {
+      setSelectedChampion('');
+
       if (user == 'blue') {
+        const newBlueChamps = [...blueChamps, champion];
+        setBlueChamps(newBlueChamps);
         await supabase
           .from('historialPartidas')
           .update({
-            bluePicks: [...blueChamps, champion]
+            bluePicks: newBlueChamps
           })
           .eq('id', roomId);
       } else {
+        const newRedChamps = [...redChamps, champion];
+        setRedChamps(newRedChamps);
         await supabase
           .from('historialPartidas')
           .update({
-            redPicks: [...redChamps, champion]
+            redPicks: newRedChamps
           })
           .eq('id', roomId);
       }
@@ -244,7 +253,7 @@ function App() {
       setCampeones(prev => prev.filter(c => c.nombre.trim().toLowerCase() != champion.trim().toLowerCase()));
       setCampeonesFiltrados(campeones);
 
-      setSelectedChampion('');
+      setPickingIndex(pickingIndex);
     };
 
     socket.on('championPicked', handleChampionPicked);
@@ -256,6 +265,8 @@ function App() {
 
   useEffect(() => {
     const handleChampionBanned = async ({ user, champion }) => {
+      setSelectedChampion('');
+
       if (champion !== '') {
         if (user === 'blue') {
           await supabase
@@ -276,8 +287,6 @@ function App() {
 
         setCampeones(prev => prev.filter(c => c.nombre.trim().toLowerCase() !== champion.trim().toLowerCase()));
         setCampeonesFiltrados(campeones);
-
-        setSelectedChampion('');
       }
     };
 
@@ -379,9 +388,9 @@ return (
           blueChamps.includes(selectedChampion) || side != 'blue'
             ? blueChamps
             : [...blueChamps, selectedChampion]
-
         }
         side={"blue"}
+        pickingIndex={pickingIndex}
       />
 
       <ColumnaCentral
@@ -404,6 +413,7 @@ return (
             : [...redChamps, selectedChampion]
         }
         side={"red"}
+        pickingIndex={pickingIndex}
       />
     </div>
     <BarraInferior
