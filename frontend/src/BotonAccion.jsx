@@ -31,7 +31,7 @@ export default function BotonAccion({ side, selectedChampion, roomId, draftStart
         <div className='d-flex justify-content-center'>
             {!draftStarted && (
                 <button onClick={handleReadyClick}>
-                    {isReady ? 'Esperando al otro jugador...' : 'Ready'}
+                    {isReady ? 'Esperando al otro jugador...' : 'Listo'}
                 </button>
             )}
 

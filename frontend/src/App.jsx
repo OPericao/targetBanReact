@@ -146,9 +146,8 @@ function App() {
     setRol(valor);
   };
 
-  const handleJugadorChange = (e) => {
-    const valor = e.target.value;
-    setJugador(parseInt(valor));
+  const handleJugadorChange = (jugadorIndex) => {
+    setJugador(jugadorIndex);
   };
 
   const handleHoverChange = (e) => {
@@ -162,7 +161,6 @@ function App() {
   useEffect(() => {
     socket.on('championHovered', ( champion ) => {
       setSelectedChampion(champion);
-      console.log(champion);
     });
 
     return () => socket.off('championHovered');
@@ -379,9 +377,26 @@ function filtrarCampeones() {
 
 return (
   <div id="appContainer" className="d-flex flex-column min-vh-100">
-    <div className={`alert ${ side.replace('ban', '') == "blue" ? 'alert-primary' : 'alert-danger'} text-center fw-bold`} role="alert">
-      Turno del equipo {side.replace('ban', '')} - Tiempo restante: {tiempoRestante}s
+    <div>
+      {(side === '' && draftStarted) ? (
+        <div className="alert alert-info text-center fw-bold" role="alert">
+          DRAFT FINALIZADO
+        </div>
+      ) : !draftStarted ? (
+        <div className="alert alert-info text-center fw-bold" role="alert">
+          Dale al botón "Listo" para comenzar el draft
+        </div>
+      ) : side.includes('ban') ? (
+        <div className={`alert ${ side.includes('blue') ? 'alert-primary' : 'alert-danger'} text-center fw-bold `} role="alert">
+          Ban del equipo {side.replace('ban', '')} - Tiempo restante: {tiempoRestante}s
+        </div>
+      ) : (
+        <div className={`alert ${ side.includes('blue') ? 'alert-primary' : 'alert-danger'} text-center fw-bold `} role="alert">
+          Pick del equipo {side.replace('ban', '')} - Tiempo restante: {tiempoRestante}s
+        </div>
+      )}
     </div>
+
     <div className="grid-container" style={{ display: 'grid', gridTemplateColumns: '1.5fr 3fr 1.5fr' }}>
       <PicksColumn
         champs={

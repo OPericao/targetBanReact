@@ -1,12 +1,25 @@
-export default function Jugadores({ jugadores, handleJugadorChange }){
+import Select from 'react-select';
+
+export default function Jugadores({ jugadores, handleJugadorChange }) {
+    const opcionesJugadores = [
+        { value: '0', label: 'Todos' },
+        ...jugadores.map(j => ({ value: j.id, label: j.nombre }))
+    ];
+
     return (
-        <div className="d-flex justify-content-center" style={{ width: '15%' }}>
-            <select className="form-select" onChange={handleJugadorChange}>
-                <option value="0">Todos</option>
-                {jugadores.map((jugador) => (
-                    <option key={jugador.id} value={jugador.id}>{jugador.nombre}</option>
-                ))}
-            </select>
-        </div>
+        <Select
+        className="basic-single"
+        placeholder="Buscar por jugador"
+        options={opcionesJugadores}
+        onChange={option => handleJugadorChange(option.value)}
+        isSearchable={true}
+        styles={{
+            container: (base) => ({
+            ...base,
+            width: '200px',
+            }),
+        }}
+        />
+
     );
 }
