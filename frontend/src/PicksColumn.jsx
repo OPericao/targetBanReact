@@ -7,8 +7,6 @@ export default function SideColumn({ champs, side, pickingIndex }) {
         "unknown"
     ];
 
-    console.log(pickingIndex);
-
     const indexSide = pickingIndex.slice(0, -1); 
     let realIndex = -1;
 
@@ -31,12 +29,13 @@ export default function SideColumn({ champs, side, pickingIndex }) {
         {bannersToShow.map((champ, index) => (
             <div key={index} className="d-flex justify-content-center">
             <img
-            src={`/assets/banners/${champ}Banner.png`}
+            src={`/assets/banners/${champ}Banner.jpg`}
             className={`
                 img-fluid 
                 border 
                 rounded 
-                p-1 
+                p-1
+                fade-in
                 ${realIndex === index ? "border border-4 border-warning shadow" : "border border-secondary border-2"}
             `}
             draggable="false"

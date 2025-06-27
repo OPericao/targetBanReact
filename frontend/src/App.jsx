@@ -22,6 +22,8 @@ function App() {
   const [side, setSide] = useState('');
   const [blueChamps, setBlueChamps] = useState([]);
   const [redChamps, setRedChamps] = useState([]);
+  const [blueFearless, setBlueFearless] = useState([]);
+  const [redFearless, setRedFearless] = useState([]);
   const [blueBans, setBlueBans] = useState([]);
   const [redBans, setRedBans] = useState([]);
 
@@ -80,28 +82,68 @@ function App() {
     }
 
     if (existing) {
-      return existing;
-    }
-
-    const { data, error } = await supabase
+      const { data: partida } = await supabase
       .from('historialPartidas')
-      .insert([{
-        id: roomId,
+      .select('bluePicks, redPicks')
+      .eq('id', existing.id)
+      .single();
+
+      const { data: data } = await supabase
+      .from('historialPartidas')
+      .update({
+        blueFearless: partida.bluePicks,
         bluePicks: [],
-        redPicks: [],
         blueBans: [],
-        redBans: []
-      }])
+        redFearless: partida.redPicks,
+        redPicks: [],
+        redBans: [],
+        draftFinished: false
+      })
+      .eq('id', existing.id)
       .select()
       .single();
 
-    if (error) {
-      console.error("Erro creando a sala:", error);
-      return null;
-    }
+      setBlueFearless(data.blueFearless);
+      setRedFearless(data.redFearless);
+      setBlueChamps([]);
+      setRedChamps([]);
+      setBlueBans([]);
+      setRedBans([]);
 
-    return data;
+      socket.emit('redConnect');
+
+      return data;
+    }
+    else {
+      const { data, error } = await supabase
+        .from('historialPartidas')
+        .insert([{
+          id: roomId,
+          bluePicks: [],
+          redPicks: [],
+          blueBans: [],
+          redBans: [],
+          draftFinished: false,
+          blueFearless: [],
+          redFearless: []
+        }])
+        .select()
+        .single();
+
+      if (error) {
+        console.error("Erro creando a sala:", error);
+        return null;
+      }
+
+      return data;
+    }
   }
+
+  socket.on('redConnected', () => {
+    if(team == 'red'){
+      window.location.reload();
+    }
+  });
 
   useEffect(() => {
     socket.emit('joinRoom', { roomId, team });
@@ -131,6 +173,8 @@ function App() {
         setRedChamps(data.redPicks || []);
         setBlueBans(data.blueBans || []);
         setRedBans(data.redBans || []);
+        setBlueFearless(data.blueFearless || []);
+        setRedFearless(data.redFearless || []);
       }
     };
     
@@ -222,7 +266,7 @@ function App() {
     );
 
     setCampeonesFiltrados(filtrados);
-  }, [rol, campeon, jugador, campeones]);
+  }, [rol, campeon, jugador, campeones, blueChamps, redChamps, blueBans, redBans]);
 
   useEffect(() => {
     const handleChampionPicked = async ({ user, champion, pickingIndex }) => {
@@ -335,7 +379,7 @@ function App() {
     socket.on('startDraft', async () => {
       setDraftStarted(true);
       try {
-        if(team == "blue"){
+        if(team == "blue" ){
           await crearSala();
         }
       } catch (err) {
@@ -346,13 +390,26 @@ function App() {
     return () => socket.off('startDraft');
   }, []);
 
-  useEffect(() => {
-    socket.on('draftFinished', () => {
-      setSide('');
-    });
+useEffect(() => {
+  socket.on('draftFinished', async () => {
+    setSide('');
 
-    return () => socket.off('draftFinished');
-  }, []);
+    const { error: updateError } = await supabase
+        .from('historialPartidas')
+        .update({
+          draftFinished: true
+        })
+        .eq('id', roomId);
+
+      if (updateError) {
+        console.error("Erro actualizando a sala existente:", updateError);
+        return null;
+      }
+  });
+
+  return () => socket.off('draftFinished');
+}, []);
+
 
 function filtrarCampeones() {
   return campeones.filter(c => {
@@ -431,7 +488,10 @@ return (
         pickingIndex={pickingIndex}
       />
     </div>
+
     <BarraInferior
+      blueFearless={blueFearless}
+      redFearless={redFearless}
       blueBans={blueBans}
       redBans={redBans}
       side={side}

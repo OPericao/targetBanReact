@@ -156,6 +156,10 @@ io.on('connection', (socket) => {
     socket.emit('updatedStatus', ({ blue: blueFull, red: redFull }))
   });
 
+  socket.on('redConnect', () => {
+    socket.emit('redConnected')
+  });
+
   socket.on('disconnect', () => {
     console.log('🔴 Cliente desconectado:', socket.id);
   });
@@ -165,7 +169,7 @@ app.get('/', (req, res) => {
   res.send('Servidor Socket.IO funcionando.');
 });
 
-const PORT = process.env.PORT || 8080;
+const PORT = process.env.PORT || 4000;
 server.listen(PORT, () => {
   console.log(`🚀 Servidor escoitando en http://localhost:${PORT}`);
 });
